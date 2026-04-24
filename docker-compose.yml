@@ -1,0 +1,64 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: nirikshak-postgres
+    environment:
+      POSTGRES_DB: nirikshak
+      POSTGRES_USER: nirikshak
+      POSTGRES_PASSWORD: nirikshak123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nirikshak -d nirikshak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-ai:
+    build: ./python-ai
+    container_name: nirikshak-python-ai
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  springboot:
+    build: ./backend
+    container_name: nirikshak-springboot
+    ports:
+      - "8080:8080"
+    environment:
+      JWT_SECRET: nirikshak_jwt_secret_change_in_prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/nirikshak
+      SPRING_DATASOURCE_USERNAME: nirikshak
+      SPRING_DATASOURCE_PASSWORD: nirikshak123
+      AI_VISION_SERVICE_URL: http://python-ai:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      python-ai:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: nirikshak-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+      - REACT_APP_WS_URL=ws://localhost:8080
+    depends_on:
+      - springboot
+
+volumes:
+  pgdata:
