@@ -1,0 +1,206 @@
+{
+  "info": {
+    "name": "Nirikshak AI — API Collection",
+    "description": "Complete REST API collection for the Nirikshak AI Real-Time Proctoring System.\n\nBase URL: http://localhost:8080\nAuth: Bearer JWT (obtained from /api/auth/login)\n\nAll timestamps returned in ISO-8601. Display in IST (UTC+5:30) on the client.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",   "value": "http://localhost:8080" },
+    { "key": "token",      "value": "" },
+    { "key": "session_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Arjun Sharma\",\n  \"email\": \"arjun@example.com\",\n  \"password\": \"test1234\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('token', j.token);",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has token', () => pm.expect(j.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@nirikshak.ai\",\n  \"password\": \"demo1234\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('token', j.token);",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('JWT returned', () => pm.expect(j.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exam Session",
+      "item": [
+        {
+          "name": "Start Exam",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/exam/start",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"examId\": \"CSE-2024-FINAL\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('session_id', j.id);",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status ACTIVE', () => pm.expect(j.status).to.equal('ACTIVE'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Session",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/exam/{{session_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "End Exam",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/api/exam/{{session_id}}/end",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Violations",
+      "item": [
+        {
+          "name": "Get Violation Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/violations/{{session_id}}"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has violations array', () => pm.expect(j.violations).to.be.an('array'));",
+                  "pm.test('Has totalViolations', () => pm.expect(j.totalViolations).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Python AI Vision",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8000/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('OK', () => pm.expect(pm.response.json().status).to.equal('ok'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Analyze Frame (CLEAR)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "http://localhost:8000/analyze",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"frameBase64\": \"/9j/4AAQSkZJRgABAQEASABIAAD...\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "var j = pm.response.json();",
+                  "pm.test('Has alertType', () => pm.expect(j.alertType).to.be.oneOf(['CLEAR','GAZE_AWAY','MULTIPLE_FACES','NO_FACE']));",
+                  "pm.test('Has confidence', () => pm.expect(j.confidence).to.be.a('number'));",
+                  "pm.test('Has severity', () => pm.expect(j.severity).to.be.oneOf(['LOW','MEDIUM','HIGH']));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
