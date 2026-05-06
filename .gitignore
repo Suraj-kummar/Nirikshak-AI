@@ -22,7 +22,7 @@ backend/target/
 frontend/node_modules/
 frontend/build/
 .npm/
-*.lock
+yarn.lock
 
 # ── Docker ────────────────────────────────────────────────────────────────────
 .docker/
