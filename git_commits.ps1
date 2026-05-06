@@ -1,55 +1,112 @@
+# ══════════════════════════════════════════════════════════════
+# Nirikshak AI — 24 Commit Push Script
+# ══════════════════════════════════════════════════════════════
+
 git init
+git remote remove origin 2>$null
 git remote add origin https://github.com/Suraj-kummar/Nirikshak-AI.git
 git branch -M main
 
-# Part 1: Root configurations
+# ── Commit 1: Root configs & Docker orchestration ─────────────
 git add .gitignore Makefile .env.example docker-compose.yml docker-compose.prod.yml nginx-prod.conf
-git commit -m "chore: initial setup and docker orchestration"
+git commit -m "chore: initial project setup and docker orchestration"
 
-# Part 2: Database schema
+# ── Commit 2: Database schema ─────────────────────────────────
 git add schema.sql
-git commit -m "feat(db): add postgreSQL schema and seed data"
+git commit -m "feat(db): add postgresql schema, indexes and demo seed data"
 
-# Part 3: Backend - Project config
-git add backend/pom.xml backend/Dockerfile backend/src/main/resources/ backend/.mvn backend/mvnw backend/mvnw.cmd
-git commit -m "chore(backend): spring boot project setup and dependencies"
+# ── Commit 3: Backend project config ──────────────────────────
+git add backend/pom.xml backend/Dockerfile
+git commit -m "chore(backend): spring boot 3.x project setup and maven config"
 
-# Part 4: Backend - Models & DTOs
-git add backend/src/main/java/com/nirikshak/model/ backend/src/main/java/com/nirikshak/dto/
-git commit -m "feat(backend): add jpa models and data transfer objects"
+# ── Commit 4: Backend resources ───────────────────────────────
+git add backend/src/main/resources/
+git commit -m "chore(backend): add application properties and flyway migrations"
 
-# Part 5: Backend - Repository & Config
-git add backend/src/main/java/com/nirikshak/repository/ backend/src/main/java/com/nirikshak/config/
-git commit -m "feat(backend): add data access layer and application configs"
+# ── Commit 5: Backend models ──────────────────────────────────
+git add backend/src/main/java/com/nirikshak/model/
+git commit -m "feat(backend): add jpa entity models (student, session, violation, question)"
 
-# Part 6: Backend - Security
+# ── Commit 6: Backend DTOs ────────────────────────────────────
+git add backend/src/main/java/com/nirikshak/dto/
+git commit -m "feat(backend): add data transfer objects and request/response schemas"
+
+# ── Commit 7: Backend repositories ───────────────────────────
+git add backend/src/main/java/com/nirikshak/repository/
+git commit -m "feat(backend): add spring data jpa repositories"
+
+# ── Commit 8: Backend configs ─────────────────────────────────
+git add backend/src/main/java/com/nirikshak/config/
+git commit -m "feat(backend): add application config (cors, websocket, rate limit)"
+
+# ── Commit 9: Backend security ────────────────────────────────
 git add backend/src/main/java/com/nirikshak/security/
-git commit -m "feat(backend): implement stateless jwt security filters"
+git commit -m "feat(backend): implement stateless jwt authentication and security filters"
 
-# Part 7: Backend - Services
+# ── Commit 10: Backend services ───────────────────────────────
 git add backend/src/main/java/com/nirikshak/service/
-git commit -m "feat(backend): implement core business logic and services"
+git commit -m "feat(backend): implement core business logic and ai vision integration"
 
-# Part 8: Backend - Controllers & Tests
-git add backend/src/main/java/com/nirikshak/controller/ backend/src/test/ backend/src/main/java/com/nirikshak/NirikshakApplication.java
-git commit -m "feat(backend): add rest api, websocket controllers, and unit tests"
+# ── Commit 11: Backend controllers ────────────────────────────
+git add backend/src/main/java/com/nirikshak/controller/
+git commit -m "feat(backend): add rest api controllers (auth, exam, violations)"
 
-# Part 9: Frontend - Configs & Public
-git add frontend/package.json frontend/package-lock.json frontend/Dockerfile frontend/public/ frontend/src/index.js frontend/src/index.css
-git commit -m "chore(frontend): react project setup and static assets"
+# ── Commit 12: Backend websocket ──────────────────────────────
+git add backend/src/main/java/com/nirikshak/NirikshakApplication.java
+git commit -m "feat(backend): add main application entry point and websocket handler"
 
-# Part 10: Frontend - Foundation
-git add frontend/src/App.jsx frontend/src/theme.js frontend/src/api.js frontend/src/utils/
-git commit -m "feat(frontend): add material design 3 theme, routing, and api client"
+# ── Commit 13: Backend tests ──────────────────────────────────
+git add backend/src/test/
+git commit -m "test(backend): add junit5 unit tests for controllers and services"
 
-# Part 11: Frontend - Components & Pages
-git add frontend/src/components/ frontend/src/pages/
-git commit -m "feat(frontend): implement proctoring ui components and pages"
+# ── Commit 14: Frontend setup ─────────────────────────────────
+git add frontend/package.json frontend/package-lock.json frontend/Dockerfile frontend/.eslintrc.json frontend/.vercelignore
+git commit -m "chore(frontend): react 18 project setup and vercel deployment config"
 
-# Part 12: Python AI Service & Documentation
-git add python-ai/ README.md nirikshak-api-collection.postman_collection.json .vscode/
-git commit -m "feat(ai): integrate python computer vision service and documentation"
+# ── Commit 15: Frontend static assets ─────────────────────────
+git add frontend/public/ frontend/src/index.js frontend/src/index.css
+git commit -m "chore(frontend): add static assets, favicon and global styles"
 
-# Final catch-all just in case any files were missed in the exact paths above
+# ── Commit 16: Frontend theme & API client ────────────────────
+git add frontend/src/theme.js frontend/src/api.js
+git commit -m "feat(frontend): add material design 3 dark theme and axios api client"
+
+# ── Commit 17: Frontend routing ───────────────────────────────
+git add frontend/src/App.jsx
+git commit -m "feat(frontend): add react router with protected exam and auth routes"
+
+# ── Commit 18: Frontend utilities ─────────────────────────────
+git add frontend/src/utils/
+git commit -m "feat(frontend): add proctor engine and computer vision utilities"
+
+# ── Commit 19: Frontend components ────────────────────────────
+git add frontend/src/components/
+git commit -m "feat(frontend): implement reusable ui components (webcam, alerts, timer)"
+
+# ── Commit 20: Frontend pages ─────────────────────────────────
+git add frontend/src/pages/
+git commit -m "feat(frontend): implement login, dashboard and exam room pages"
+
+# ── Commit 21: Frontend nginx config ─────────────────────────
+git add frontend/nginx.conf frontend/vercel.json
+git commit -m "chore(frontend): add nginx reverse proxy and vercel spa routing config"
+
+# ── Commit 22: Python AI service ─────────────────────────────
+git add python-ai/
+git commit -m "feat(ai): add python fastapi vision service with mediapipe gaze detection"
+
+# ── Commit 23: Deployment configs ────────────────────────────
+git add render.yaml DEPLOY.md
+git commit -m "chore(deploy): add render blueprint and vercel deployment guide"
+
+# ── Commit 24: Docs and final cleanup ────────────────────────
+git add README.md nirikshak-api-collection.postman_collection.json
 git add .
-git commit -m "chore: final adjustments and cleanup"
+git commit -m "docs: update readme with installation guide, api reference and made by surajj"
+
+# ── Push all 24 commits ───────────────────────────────────────
+Write-Host ""
+Write-Host "Pushing 24 commits to GitHub..." -ForegroundColor Cyan
+git push -u origin main --force
+Write-Host ""
+Write-Host "Done! All 24 commits pushed to https://github.com/Suraj-kummar/Nirikshak-AI" -ForegroundColor Green

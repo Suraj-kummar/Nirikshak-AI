@@ -6,214 +6,293 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.10-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
+---
 
 ## 🌟 What is Nirikshak AI?
-Nirikshak AI is a state-of-the-art, privacy-first, real-time automated proctoring solution built specifically for educational institutions, EdTech platforms, and corporate placement drives. The word "Nirikshak" translates to "Observer" or "Inspector" in Hindi/Sanskrit, perfectly encapsulating our system's role: an intelligent, unbiased, and silent observer that ensures academic integrity during online assessments.
 
-Unlike traditional proctoring solutions that rely heavily on human intervention or invasive monitoring techniques, Nirikshak AI leverages advanced Computer Vision (CV) and a resilient microservices architecture to detect anomalous behaviors (such as gaze deviation, multiple faces, or missing faces) in real-time. 
+Nirikshak AI is a state-of-the-art, **privacy-first**, real-time automated proctoring solution built for educational institutions, EdTech platforms, and corporate placement drives. The word **"Nirikshak"** translates to *"Observer"* or *"Inspector"* in Hindi/Sanskrit — an intelligent, unbiased, and silent observer that ensures academic integrity during online assessments.
 
-## 📸 Screenshots
-> *Note: Replace the placeholder links below with actual screenshots of your running application.*
-<details>
-<summary><b>Click to view system screenshots</b></summary>
-<br>
+Unlike traditional proctoring solutions that rely on human intervention or invasive video storage, Nirikshak AI uses **Computer Vision** and a **resilient microservices architecture** to detect anomalous behaviors (gaze deviation, multiple faces, missing face) in real-time — storing **zero video data**.
 
-| Student Exam Dashboard | Admin Violation Report |
-|:---:|:---:|
-| <img src="https://via.placeholder.com/600x350.png?text=Student+Exam+UI" width="400"/> | <img src="https://via.placeholder.com/600x350.png?text=Violation+Report+UI" width="400"/> |
+---
 
-</details>
+## 💡 Key Benefits
 
-## 💡 How It Helps and Key Benefits
-- **Automated Integrity Maintenance:** Eliminates the need for 1:1 human proctoring by using intelligent CV algorithms to flag suspicious activities automatically.
-- **Privacy-First Approach:** We strictly adhere to a "Zero Video Storage" policy. Frames are analyzed in memory and discarded instantly. Only lightweight JSON alerts are persisted, ensuring compliance with global data privacy standards (e.g., DPDP Act, GDPR).
-- **Scalable and Lightweight:** The system is designed to handle thousands of concurrent test-takers with minimal latency. It operates efficiently even on low-bandwidth networks common in remote areas.
-- **Real-Time Feedback Loop:** Provides immediate visual feedback to students and instantaneous alerts to administrators, deterring malpractice before it escalates.
-- **Cost-Effective:** Drastically reduces operational costs associated with hiring human proctors and storing massive amounts of video data.
+- ✅ **Zero Video Storage** — Frames are analyzed in memory and discarded instantly. Only JSON alerts are persisted.
+- ✅ **Real-Time Detection** — WebSocket-driven, sub-300ms frame analysis pipeline.
+- ✅ **Immutable Audit Trails** — Violation records cannot be deleted or modified once written.
+- ✅ **Privacy-First** — Compliant with DPDP Act, GDPR principles.
+- ✅ **Fully Dockerized** — Runs anywhere Docker is installed, no manual setup required.
 
-## 🚀 How It Differs From Others (Competitive Advantage)
-1. **Zero Video Storage Guarantee:** Competitors often record and store hours of video per student, creating massive privacy liabilities and storage costs. Nirikshak AI stores *zero* video data. 
-2. **Event-Driven Microservices vs. Monoliths:** Our architecture decouples the heavy AI inference (Python/FastAPI) from the core business logic (Spring Boot), communicating via high-throughput WebSockets. This prevents system bottlenecks during peak exam loads.
-3. **Edge-to-Cloud Efficiency:** Instead of sending massive video streams over the network, the React frontend extracts frames and sends lightweight Base64 payloads, reducing bandwidth consumption by over 80% compared to WebRTC streaming.
-4. **Immutable Audit Trails:** Violations are stored in PostgreSQL as immutable records. The backend service layer strictly prohibits UPDATE or DELETE operations on violation logs, ensuring absolute tamper-proof auditability.
+---
 
 ## 🛠️ Technology Stack
-We have carefully selected a modern, robust, and scalable technology stack:
 
-### Frontend
-- **React 18 & Material-UI (MUI v5):** For a responsive, accessible, and highly interactive user interface featuring modern glassmorphism and a dark-first aesthetic.
-- **WebSockets API:** For bidirectional, low-latency communication with the backend.
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18, Material-UI v5, WebSockets |
+| **Backend** | Spring Boot 3.x, Spring Security, JWT, Flyway |
+| **AI Vision** | Python 3.10, FastAPI, MediaPipe, OpenCV |
+| **Database** | PostgreSQL 15 |
+| **Infrastructure** | Docker, Docker Compose, Nginx |
 
-### Core Backend
-- **Spring Boot 3.x (Java 17):** Provides a rock-solid, enterprise-grade foundation for business logic, JWT authentication, and WebSocket session management.
-- **Spring Data JPA & Hibernate:** For robust ORM and database interactions.
-- **Spring Security:** Securing endpoints and WebSockets with stateless JWT authentication.
-
-### AI Vision Engine
-- **Python 3.10 & FastAPI:** Chosen for its extremely high performance and asynchronous capabilities, making it perfect for serving AI models with minimal latency.
-- **MediaPipe & OpenCV:** Utilized for lightweight, highly accurate 3D face detection, head pose estimation (solvePnP), and iris gaze tracking—all without needing heavy GPU clusters.
-
-### Database & Infrastructure
-- **PostgreSQL 15:** A powerful open-source relational database for persisting exam sessions and immutable violation records.
-- **Docker & Docker Compose:** For seamless, consistent, and reproducible deployments across development, staging, and production environments.
-- **Nginx:** Configured as a reverse proxy for production deployments.
-
-## ⚙️ Environment Variables
-The system requires specific environment variables to function correctly. You can define these in a `.env` file at the root of the project or pass them directly via Docker.
-
-### Backend (`backend/`)
-| Variable | Description | Default / Example |
-|----------|-------------|-------------------|
-| `JWT_SECRET` | Secret key for signing JWT tokens | `your_super_secret_jwt_key_here` |
-| `SPRING_DATASOURCE_URL` | PostgreSQL DB connection URL | `jdbc:postgresql://localhost:5432/nirikshak` |
-| `SPRING_DATASOURCE_USERNAME` | Database user | `nirikshak` |
-| `SPRING_DATASOURCE_PASSWORD` | Database password | `nirikshak123` |
-| `AI_VISION_SERVICE_URL` | Internal URL to Python AI service | `http://localhost:8000` |
-
-### Python AI (`python-ai/`)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `YAW_THRESHOLD` | Head yaw degrees before flagging `GAZE_AWAY` | `25` |
-| `PITCH_THRESHOLD`| Head pitch degrees before flagging `GAZE_AWAY` | `20` |
-
-### Frontend (`frontend/`)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `REACT_APP_BACKEND_URL`| HTTP API base URL | `http://localhost:8080` |
-| `REACT_APP_WS_URL` | WebSocket Server URL | `ws://localhost:8080` |
+---
 
 ## 🚀 Installation & Quick Start
 
-### Prerequisites
-- **Docker** ≥ 24.x and **Docker Compose** ≥ 2.x
-- *(For Manual Setup)*: Java 17, Maven 3.9, Node 20, Python 3.10, PostgreSQL 15
+### ✅ Option 1 — Docker Compose (Recommended, easiest)
 
-### Quick Start (Using Docker Compose)
-The easiest and recommended way to get the entire microservices stack running is via Docker:
+> **Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
 ```bash
-# 1. Clone or navigate to the project directory
-cd "Nirikshak AI"
+# 1. Clone the repository
+git clone https://github.com/YOUR_USERNAME/nirikshak-ai.git
+cd nirikshak-ai
 
-# 2. Start all services in detached mode
-# Note: The first run takes ~5 minutes as it builds the Docker images.
-docker-compose up --build -d
+# 2. Start all 4 services (first run takes ~5-10 min to build images)
+docker-compose up --build
 
-# 3. Access the applications:
-#    Frontend (React)      → http://localhost:3000
-#    Backend API (Spring)  → http://localhost:8080
-#    AI Vision API (Docs)  → http://localhost:8000/docs
+# 3. Open in your browser
+#    Frontend  →  http://localhost:3000
+#    API Docs  →  http://localhost:8000/docs
+#    Backend   →  http://localhost:8080
 ```
 
-**Default Demo Credentials:**
-- Email: `demo@nirikshak.ai`
-- Password: `demo1234`
+**Demo Login Credentials:**
+| Field | Value |
+|---|---|
+| Email | `demo@nirikshak.ai` |
+| Password | `demo1234` |
 
-### Manual Setup (For Development)
-If you wish to run the services individually for active development:
+> To stop: `docker-compose down`  
+> To restart (no rebuild): `docker-compose up`
+
+---
+
+### ✅ Option 2 — Manual Setup (For Development)
+
+Use this if you want to run each service individually for active development.
 
 <details>
-<summary><b>View Manual Setup Instructions</b></summary>
+<summary><b>📖 Click to expand manual setup instructions</b></summary>
 
-#### 1. Database (PostgreSQL)
+#### Prerequisites
+- Java 21 + Maven 3.9
+- Node.js 20
+- Python 3.10
+- PostgreSQL 15
+
+#### Step 1 — Database
 ```bash
+# Start PostgreSQL via Docker (easiest)
 docker run -d --name nirikshak-pg \
   -e POSTGRES_DB=nirikshak \
   -e POSTGRES_USER=nirikshak \
   -e POSTGRES_PASSWORD=nirikshak123 \
   -p 5432:5432 postgres:15
-
-# Apply the initial database schema
-psql -h localhost -U nirikshak -d nirikshak -f schema.sql
 ```
 
-#### 2. Python AI Vision Service
+#### Step 2 — Python AI Vision Service
 ```bash
 cd python-ai
 python -m venv .venv
+
+# Activate virtual environment
 .venv\Scripts\activate          # Windows
 # source .venv/bin/activate     # Linux/Mac
+
 pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
+Service available at: http://localhost:8000
 
-#### 3. Spring Boot Backend
+#### Step 3 — Spring Boot Backend
 ```bash
 cd backend
+
+# Windows (PowerShell)
 $env:JWT_SECRET="nirikshak_jwt_secret_change_in_prod_use_256bit"
 $env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/nirikshak"
+$env:SPRING_DATASOURCE_USERNAME="nirikshak"
+$env:SPRING_DATASOURCE_PASSWORD="nirikshak123"
 $env:AI_VISION_SERVICE_URL="http://localhost:8000"
+
 mvn spring-boot:run
 ```
+API available at: http://localhost:8080
 
-#### 4. React Frontend
+#### Step 4 — React Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
+App available at: http://localhost:3000
+
 </details>
 
-## 📚 API Reference Overview
+---
 
-Nirikshak AI exposes a clean REST API alongside its WebSockets. A full Postman collection (`nirikshak-api-collection.postman_collection.json`) is included in the root directory for easy testing.
+### ✅ Option 3 — Share with Anyone (Cloud Deploy)
 
-### Authentication
-- `POST /api/auth/login` - Authenticate and receive JWT
-- `POST /api/auth/register` - Create a new student account
+Deploy Nirikshak AI to the internet so anyone can access it without installing anything.
 
-### Exam Management
-- `GET /api/exam/{id}` - Fetch exam details
-- `POST /api/exam/start` - Initialize a proctored exam session
-- `POST /api/exam/{id}/end` - Terminate an exam session
+| Service | Platform | Free? |
+|---|---|---|
+| React Frontend | **Vercel** | ✅ |
+| Spring Boot API | **Render** | ✅ |
+| Python AI | **Render** | ✅ |
+| PostgreSQL DB | **Render** | ✅ (90 days) |
 
-### WebSockets (Real-Time Proctoring)
-- **Endpoint:** `ws://localhost:8080/ws/exam?token=<JWT>`
-- **Behavior:** Accepts Base64 encoded JPEG frames, validates them against the AI engine, and broadcasts violations back to the client immediately.
+<details>
+<summary><b>☁️ Click to expand cloud deployment steps</b></summary>
 
-## 🔐 System Architecture & Data Flow
-
-```text
-┌──────────────────────────────────────────────────────────────────┐
-│                      NIRIKSHAK AI SYSTEM                         │
-│                                                                  │
-│  ┌─────────────────┐   WebSocket (ws://)   ┌─────────────────┐   │
-│  │  React Frontend │ ◄──────────────────── │  Spring Boot 3  │   │
-│  │  (Port 3000)    │──────────────────────►│  (Port 8080)    │   │
-│  └─────────────────┘                       └────────┬────────┘   │
-│                                                     │            │
-│                                              HTTP POST /analyze  │
-│                                                     │            │
-│                                            ┌────────▼────────┐   │
-│                                            │ Python FastAPI  │   │
-│                                            │ (Port 8000)     │   │
-│                                            └─────────────────┘   │
-│                                                                  │
-│  ┌─────────────────┐                                             │
-│  │   PostgreSQL 15 │ ◄── Spring Boot writes (violations are      │
-│  │   (Port 5432)   │     IMMUTABLE once written)                 │
-│  └─────────────────┘                                             │
-└──────────────────────────────────────────────────────────────────┘
+#### Step 1 — Push to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/nirikshak-ai.git
+git push -u origin main
 ```
 
-## 🧪 Testing
-The project includes automated tests to ensure system stability.
-- **Backend (Spring Boot):** Run `mvn test` inside the `backend/` directory to execute JUnit 5 tests.
-- **Frontend (React):** Run `npm test` inside the `frontend/` directory to run React Testing Library suites.
+#### Step 2 — Deploy on Render (backend)
+1. Go to [render.com](https://render.com) → New → **PostgreSQL** (free)
+2. New → **Web Service** → Docker → root: `python-ai`
+3. New → **Web Service** → Docker → root: `backend`
+   - Add env vars: `SPRING_DATASOURCE_URL`, `JWT_SECRET`, `AI_VISION_SERVICE_URL`
 
-## ❓ Troubleshooting & FAQ
-- **Camera Not Found / Permission Denied:** Ensure your browser has granted camera permissions. Note: Browsers strictly require `HTTPS` (or `localhost`) to access `getUserMedia`.
-- **Port Conflicts:** If ports `8080`, `3000`, or `8000` are already in use, stop existing processes or map different external ports in `docker-compose.yml`.
-- **Database Connection Refused:** Ensure PostgreSQL is fully started before the backend attempts to connect. The Docker Compose file utilizes `depends_on` to handle this sequence automatically.
+#### Step 3 — Deploy on Vercel (frontend)
+1. Go to [vercel.com](https://vercel.com) → New Project → Import GitHub repo
+2. Root Directory: `frontend`
+3. Add env var: `REACT_APP_BACKEND_URL` = your Render Spring Boot URL
+4. Deploy 🚀
+
+> Full details in [`DEPLOY.md`](./DEPLOY.md)
+
+</details>
+
+---
+
+## ⚙️ Environment Variables
+
+### Backend
+| Variable | Description | Default |
+|---|---|---|
+| `JWT_SECRET` | JWT signing secret (min 32 chars) | `nirikshak_jwt_secret...` |
+| `SPRING_DATASOURCE_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://localhost:5432/nirikshak` |
+| `SPRING_DATASOURCE_USERNAME` | DB username | `nirikshak` |
+| `SPRING_DATASOURCE_PASSWORD` | DB password | `nirikshak123` |
+| `AI_VISION_SERVICE_URL` | Python AI service URL | `http://localhost:8000` |
+
+### Frontend
+| Variable | Description | Default |
+|---|---|---|
+| `REACT_APP_BACKEND_URL` | Backend API base URL | `http://localhost:8080` |
+| `REACT_APP_WS_URL` | WebSocket URL | `ws://localhost:8080` |
+
+---
+
+## 📚 API Reference
+
+Full Postman collection included: `nirikshak-api-collection.postman_collection.json`
+
+### Authentication
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/login` | Login and receive JWT |
+| `POST` | `/api/auth/register` | Register new student |
+
+### Exam Management
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/exam/start` | Start a proctored session |
+| `GET` | `/api/exam/{id}` | Get session details |
+| `POST` | `/api/exam/{id}/end` | End session |
+| `POST` | `/api/exam/{id}/submit` | Submit answers |
+| `GET` | `/api/exam/questions/{examId}` | Get question bank |
+
+### Violations
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/violations/{sessionId}` | Get violation report |
+
+### WebSocket (Real-Time Proctoring)
+```
+ws://localhost:8080/ws/exam?token=<JWT>
+```
+Accepts Base64-encoded JPEG frames → returns violation alerts in real-time.
+
+---
+
+## 🔐 System Architecture
+
+```
+Browser → React (Port 3000)
+              │  WebSocket + REST
+              ▼
+        Spring Boot (Port 8080)
+         │                 │
+         │ Flyway           │ HTTP POST /analyze
+         ▼                 ▼
+   PostgreSQL 15     Python FastAPI (Port 8000)
+   (Violations,      (MediaPipe CV — gaze,
+    Sessions,         face detection)
+    Questions)
+```
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Backend unit tests (JUnit 5 + MockMvc)
+cd backend
+mvn test
+
+# Python AI tests (pytest)
+cd python-ai
+pip install -r requirements-test.txt
+pytest
+```
+
+---
+
+## ❓ Troubleshooting
+
+| Issue | Fix |
+|---|---|
+| Camera not working | Allow camera in browser permissions. Needs `https://` or `localhost`. |
+| Port already in use | `docker-compose down` then `docker-compose up` |
+| Spring Boot fails to start | Wait for PostgreSQL to be healthy first |
+| First request is slow | Free tier on Render sleeps after 15 min — first request wakes it up (~30s) |
+
+---
 
 ## 🤝 Contributing
-Contributions are always welcome! 
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
+---
+
 ## 📄 License
+
 MIT — Build freely, proctor fairly.
-*Built with ❤️ for the global EdTech ecosystem.*
+
+---
+
+<div align="center">
+
+## ✨ Made with ❤️ by Surajj
+
+*Building intelligent systems that make education fair for everyone.*
+
+[![GitHub](https://img.shields.io/badge/GitHub-Surajj-181717?logo=github&logoColor=white)](https://github.com/Suraj-kummar)
+
+</div>
