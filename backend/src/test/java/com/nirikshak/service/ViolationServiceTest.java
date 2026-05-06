@@ -109,9 +109,12 @@ class ViolationServiceTest {
         when(studentRepository.findById(session.getStudentId())).thenReturn(Optional.of(student));
         when(violationRepository.findBySessionIdOrderByTimestampAsc(sessionId))
             .thenReturn(List.of(v1, v2));
-        when(violationRepository.countBySessionIdAndAlertType(sessionId, "GAZE_AWAY")).thenReturn(1L);
-        when(violationRepository.countBySessionIdAndAlertType(sessionId, "MULTIPLE_FACES")).thenReturn(0L);
-        when(violationRepository.countBySessionIdAndAlertType(sessionId, "NO_FACE")).thenReturn(1L);
+        // Service uses a single GROUP BY query — not 3 separate COUNT calls
+        when(violationRepository.groupedCountsBySessionId(sessionId)).thenReturn(List.of(
+            new Object[]{"GAZE_AWAY",      1L},
+            new Object[]{"NO_FACE",        1L},
+            new Object[]{"MULTIPLE_FACES", 0L}
+        ));
 
         ViolationReport report = violationService.getReport(sessionId);
 
@@ -131,7 +134,8 @@ class ViolationServiceTest {
         when(sessionService.getSession(sessionId)).thenReturn(session);
         when(studentRepository.findById(any())).thenReturn(Optional.empty());
         when(violationRepository.findBySessionIdOrderByTimestampAsc(sessionId)).thenReturn(List.of());
-        when(violationRepository.countBySessionIdAndAlertType(any(), any())).thenReturn(0L);
+        // Service uses groupedCountsBySessionId — empty list when no violations
+        when(violationRepository.groupedCountsBySessionId(sessionId)).thenReturn(List.of());
 
         ViolationReport report = violationService.getReport(sessionId);
 

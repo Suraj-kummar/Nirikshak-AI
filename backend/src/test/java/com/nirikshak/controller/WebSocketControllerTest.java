@@ -98,7 +98,7 @@ class WebSocketControllerTest {
         );
         controller.handleTextMessage(wsSession, authMsg);
 
-        verify(wsSession).sendMessage(argThat(m -> m.getPayload().contains("\"status\":\"OK\"")));
+        verify(wsSession).sendMessage(argThat(m -> ((TextMessage) m).getPayload().contains("\"status\":\"OK\"")));
     }
 
     // ── AUTH handshake — rejection (Gap 3) ────────────────────────────────────
@@ -115,7 +115,7 @@ class WebSocketControllerTest {
         );
         controller.handleTextMessage(wsSession, authMsg);
 
-        verify(wsSession).sendMessage(argThat(m -> m.getPayload().contains("\"status\":\"FAIL\"")));
+        verify(wsSession).sendMessage(argThat(m -> ((TextMessage) m).getPayload().contains("\"status\":\"FAIL\"")));
         verify(wsSession).close(CloseStatus.POLICY_VIOLATION);
     }
 
@@ -130,7 +130,7 @@ class WebSocketControllerTest {
         );
         controller.handleTextMessage(wsSession, authMsg);
 
-        verify(wsSession).sendMessage(argThat(m -> m.getPayload().contains("\"status\":\"FAIL\"")));
+        verify(wsSession).sendMessage(argThat(m -> ((TextMessage) m).getPayload().contains("\"status\":\"FAIL\"")));
         verify(wsSession).close(CloseStatus.POLICY_VIOLATION);
     }
 

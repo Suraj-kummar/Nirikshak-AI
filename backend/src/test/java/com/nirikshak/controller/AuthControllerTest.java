@@ -5,16 +5,22 @@ import com.nirikshak.dto.AuthResponse;
 import com.nirikshak.dto.LoginRequest;
 import com.nirikshak.dto.RegisterRequest;
 import com.nirikshak.service.AuthService;
+import jakarta.servlet.FilterChain;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,6 +42,19 @@ class AuthControllerTest {
         .name("Test Student")
         .email("test@nirikshak.ai")
         .build();
+
+    /**
+     * The mock JwtFilter must pass requests through the chain;
+     * otherwise the controller is never invoked and the response body is empty.
+     */
+    @BeforeEach
+    void configureFilterPassThrough() throws Exception {
+        doAnswer(inv -> {
+            ((FilterChain) inv.getArgument(2))
+                .doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(jwtFilter).doFilter(any(), any(), any());
+    }
 
     @Test
     @DisplayName("POST /api/auth/login returns 200 with token")
