@@ -1,0 +1,54 @@
+# ══════════════════════════════════════════════════════════════
+# render.yaml — Render Blueprint for Nirikshak AI
+# Deploys: Spring Boot API + Python AI + PostgreSQL
+# Docs: https://render.com/docs/blueprint-spec
+# ══════════════════════════════════════════════════════════════
+
+databases:
+  - name: nirikshak-db
+    databaseName: nirikshak
+    user: nirikshak
+    plan: free
+
+services:
+  # ── Python AI Vision Service ──────────────────────────────────
+  - type: web
+    name: nirikshak-python-ai
+    runtime: docker
+    dockerfilePath: ./python-ai/Dockerfile
+    dockerContext: ./python-ai
+    plan: free
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /health
+
+  # ── Spring Boot Backend ───────────────────────────────────────
+  - type: web
+    name: nirikshak-springboot
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: nirikshak-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: nirikshak-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: nirikshak-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AI_VISION_SERVICE_URL
+        fromService:
+          name: nirikshak-python-ai
+          type: web
+          property: host
+          envVarKey: AI_VISION_SERVICE_URL
+    healthCheckPath: /actuator/health
