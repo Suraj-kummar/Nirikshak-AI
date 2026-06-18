@@ -10,7 +10,7 @@
 
 ---
 
-## 🌟 What is Nirikshak AI?
+## 🌟 What is Nirikshak AI??
 
 Nirikshak AI is a state-of-the-art, **privacy-first**, real-time automated proctoring solution built for educational institutions, EdTech platforms, and corporate placement drives. The word **"Nirikshak"** translates to *"Observer"* or *"Inspector"* in Hindi/Sanskrit — an intelligent, unbiased, and silent observer that ensures academic integrity during online assessments.
 
